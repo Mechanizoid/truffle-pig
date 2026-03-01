@@ -1,8 +1,8 @@
 # Autoconf Requirements
-# Initialize
-AC_INIT([truffle], [0.1], [hello@chrisphoenix.dev])
 # Force autoconf to be at least this version number:
-AC_PREREQ([2.68])
+AC_PREREQ([2.69])
+# Initialize
+AC_INIT([truffle-pig], [0.1], [hello@chrisphoenix.dev])
 # Safety check - list a source file that wouldn't be in another directory
 AC_CONFIG_SRCDIR([src/main.c])
 # Put autotools auxiliary files in a subdir
@@ -17,7 +17,7 @@ AM_MAINTAINER_MODE([enable])
 AC_PROG_CC
 
 # Check for dependencies
-PKG_CHECK_MODULES([gl_libs], [gl, glfw3 >= 3.0])
+PKG_CHECK_MODULES([gllibs], [gl, glfw3 >= 3.0])
 
 # Set up config header
 AC_CONFIG_HEADERS([src/config.h])

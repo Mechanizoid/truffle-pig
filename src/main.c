@@ -1,6 +1,8 @@
 #include <stdio.h>
-#include <GLFW/glfw.h>
+
+/* GLAD must be placed before GLFW */
 #include "glad/glad.h"
+#include <GLFW/glfw3.h>
 
 int main(void) {
 	printf("Hello Opengl world!\n");

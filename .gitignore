@@ -3,6 +3,9 @@
 *#*#
 .#*
 
+# build subdir
+build/*
+
 # Prerequisites
 *.d
 
