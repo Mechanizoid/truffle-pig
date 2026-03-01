@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "config.h"
 
 /* GLAD must be placed before GLFW */
@@ -38,6 +39,9 @@ const char *frag_shader_src =
 /* function declarations */
 void process_input(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+GLuint compile_shader(GLenum type, const char *src);
+void check_shader_compilation(GLenum type, GLuint shader);
+
 
 int main(void)
 {
@@ -79,39 +83,12 @@ int main(void)
 
 	/* compile vertex shader */
 	unsigned int vertex_shader;
-	vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader,
-		       1,
-		       &vertex_shader_src,
-		       NULL);
-	glCompileShader(vertex_shader);
+	vertex_shader = compile_shader(GL_VERTEX_SHADER, vertex_shader_src);
 
-	/* check for compilation errors */
-	glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &v_success);
-	if (!v_success) {
-		glGetShaderInfoLog(vertex_shader, 512, NULL, info_log);
-
-		fprintf(stderr, "ERROR::VERTEX::COMPILATION_FAILED\n");
-		fprintf(stderr, "%s\n", info_log);
-	}
 
 	/* compile fragment shader */
 	unsigned int fragment_shader;
-	fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader,
-		       1,
-		       &frag_shader_src,
-		       NULL);
-	glCompileShader(fragment_shader);
-
-	/* check for compilation errors */
-	glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &f_success);
-	if (!f_success) {
-		glGetShaderInfoLog(fragment_shader, 512, NULL, info_log);
-
-		fprintf(stderr, "ERROR::FRAGMENT::COMPILATION_FAILED\n");
-		fprintf(stderr, "%s\n", info_log);
-	}
+	fragment_shader = compile_shader(GL_FRAGMENT_SHADER, frag_shader_src);
 
 	/* link shader program */
 	unsigned int shader_program;
@@ -157,7 +134,7 @@ int main(void)
 
 
 	/* Render loop */
-	while(!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(window))
 	{
 		/* check whether user pressed ESC key */
 		process_input(window);
@@ -180,6 +157,44 @@ int main(void)
 	glfwTerminate();
 
 	return 0;
+}
+
+GLuint compile_shader(GLenum type, const char *src)
+{
+	GLuint shader;
+
+	shader = glCreateShader(type);
+	glShaderSource(shader, 1, &src, NULL);
+
+	glCompileShader(shader);
+
+	check_shader_compilation(type, shader);
+
+	return shader;
+}
+
+
+void check_shader_compilation(GLenum type, GLuint shader)
+{
+	int success;
+	char info_log[512], type_str[512] = "";
+
+	switch (type) {
+	case GL_VERTEX_SHADER:
+		strcat(type_str, "VERTEX");
+		break;
+	case GL_FRAGMENT_SHADER:
+		strcat(type_str, "FRAGMENT");
+		break;
+	}
+
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+
+	if(!success) {
+		glGetShaderInfoLog(shader, 512, NULL, info_log);
+		fprintf(stderr,	"ERROR::%s::COMPILATION_FAILED\n%s",
+			type, info_log);
+	}
 }
 
 void process_input(GLFWwindow *window)
