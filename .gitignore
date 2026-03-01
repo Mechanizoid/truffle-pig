@@ -63,7 +63,7 @@ dkms.conf
 # http://www.gnu.org/software/automake
 
 # Don't track config.h
-/**/config.h
+/**/config.h*
 
 # Ignore build-aux subdir
 build-aux/*
