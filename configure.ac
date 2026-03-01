@@ -9,17 +9,17 @@ AC_CONFIG_SRCDIR([src/main.c])
 AC_CONFIG_AUX_DIR([build-aux])
 
 # Enable 'automake'
-AM_INIT_AUTOMAKE([foreign], [subdir-objects])
+AM_INIT_AUTOMAKE([foreign subdir-objects -Wall -Werror])
 AC_CONFIG_FILES([Makefile])
 AM_MAINTAINER_MODE([enable])
 
 # Look for a C compiler
-AC_PROG_C
+AC_PROG_CC
 
 # Check for dependencies
 PKG_CHECK_MODULES([gl_libs], [gl, glfw3 >= 3.0])
 
 # Set up config header
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_HEADERS([src/config.h])
 
 AC_OUTPUT
