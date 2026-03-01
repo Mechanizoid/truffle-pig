@@ -7,6 +7,7 @@
 #include <GLFW/glfw3.h>
 
 /* function declarations */
+void process_input(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 int main(void)
@@ -40,6 +41,14 @@ int main(void)
 	/* Render loop */
 	while(!glfwWindowShouldClose(window))
 	{
+		/* check whether user pressed ESC key */
+		process_input(window);
+
+		/* rendering commands */
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		/* poll events and swap the buffers */
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
@@ -50,6 +59,12 @@ int main(void)
 	return 0;
 }
 
+void process_input(GLFWwindow *window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		glfwSetWindowShouldClose(window, true);
+	}
+}
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
