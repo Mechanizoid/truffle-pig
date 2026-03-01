@@ -193,7 +193,7 @@ void check_shader_compilation(GLenum type, GLuint shader)
 	if(!success) {
 		glGetShaderInfoLog(shader, 512, NULL, info_log);
 		fprintf(stderr,	"ERROR::%s::COMPILATION_FAILED\n%s",
-			type, info_log);
+			type_str, info_log);
 	}
 }
 
