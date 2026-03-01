@@ -20,6 +20,6 @@ AC_PROG_CC
 PKG_CHECK_MODULES([gllibs], [gl, glfw3 >= 3.0])
 
 # Set up config header
-AC_CONFIG_HEADERS([src/config.h])
+AC_CONFIG_HEADERS([include/config.h])
 
 AC_OUTPUT
