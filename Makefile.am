@@ -6,5 +6,7 @@ truffle_SOURCES = \
 	src/glad/glad.h \
 	src/KHR/khrplatform.h
 
+AM_CFLAGS = -I$(top_srcdir)/src/
+
 truffle_CFLAGS = @gllibs_CFLAGS@
 truffle_LDADD = @gllibs_LIBS@ -lm
