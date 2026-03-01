@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "../include/config.h"
+#include "config.h"
 
 /* GLAD must be placed before GLFW */
-#include "../include/glad/glad.h"
+#include "glad/glad.h"
 #include <GLFW/glfw3.h>
 
 int main(void) {
