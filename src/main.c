@@ -8,11 +8,17 @@
 #include <GLFW/glfw3.h>
 
 
-/* Vertex data defining three points of a triangle */
+/* Vertex data defining corners of a rectangle */
 float vertices[] = {
-	-0.5f,  -0.5f, 0.0f,
-	 0.5f,  -0.5f, 0.0f,
-	 0.0f,   0.5f, 0.0f
+	 0.5f,  0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	-0.5f, -0.5f, 0.0f,
+	-0.5f,  0.5f, 0.0f
+};
+
+unsigned int indices[] = {
+	0, 1, 3,   // first triangle
+	1, 2, 3    // second triangle
 };
 
 /* strings holding shader source */
@@ -79,7 +85,6 @@ int main(void)
 	frag_shader = compile_shader(GL_FRAGMENT_SHADER, frag_shader_src);
 	shader_prog = link_shader_prog(vertex_shader, frag_shader);
 
-
 	/* set up a VAO to hold our VBO */
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
@@ -91,6 +96,16 @@ int main(void)
 	glBufferData(GL_ARRAY_BUFFER,
 		     sizeof(vertices),
 		     vertices,
+		     GL_STATIC_DRAW);
+
+		/* create element buffer object */
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+		     sizeof(indices),
+		     indices,
 		     GL_STATIC_DRAW);
 
 	/* tell OpenGL how to interpret our vector data */
@@ -113,7 +128,8 @@ int main(void)
 		/* draw a happy triangle */
 		glUseProgram(shader_prog);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
 
 		/* poll events and swap the buffers */
 		glfwSwapBuffers(window);
