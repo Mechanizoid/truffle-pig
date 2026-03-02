@@ -114,6 +114,7 @@ int main(void)
 		glUseProgram(shader_prog);
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindVertexArray(0);
 
 		/* poll events and swap the buffers */
 		glfwSwapBuffers(window);
