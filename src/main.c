@@ -114,7 +114,6 @@ int main(void)
 
 	glEnableVertexAttribArray(0);
 
-
 	/* Render loop */
 	while (!glfwWindowShouldClose(window))
 	{
@@ -130,6 +129,9 @@ int main(void)
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+
+		/* set polygon mode back to fill */
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		/* poll events and swap the buffers */
 		glfwSwapBuffers(window);
@@ -214,6 +216,11 @@ void process_input(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
+	}
+
+	/* draw in wireframe as long as W key is pressed */
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 }
 
