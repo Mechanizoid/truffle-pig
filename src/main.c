@@ -47,7 +47,6 @@ void process_input(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 GLuint compile_shader(GLenum type, const char *src);
 void check_shader_compilation(GLenum type, GLuint shader);
-
 GLuint link_shader_prog(GLuint vertex_shader, GLuint frag_shader);
 
 
@@ -112,7 +111,6 @@ int main(void)
 	/* tell OpenGL how to interpret our vector data */
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
 			      (void*) 0);
-
 	glEnableVertexAttribArray(0);
 
 	/* Render loop */
@@ -151,9 +149,9 @@ GLuint compile_shader(GLenum type, const char *src)
 
 	shader = glCreateShader(type);
 	glShaderSource(shader, 1, &src, NULL);
-
 	glCompileShader(shader);
 
+	/* check that shader compiled successfully */
 	check_shader_compilation(type, shader);
 
 	return shader;
