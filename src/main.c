@@ -8,11 +8,17 @@
 #include <GLFW/glfw3.h>
 
 
-/* Vertex data defining three points of a triangle */
+/* Vertex data defining corners of a rectangle */
 float vertices[] = {
-	-0.5f,  -0.5f, 0.0f,
-	 0.5f,  -0.5f, 0.0f,
-	 0.0f,   0.5f, 0.0f
+	 0.5f,  0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	-0.5f, -0.5f, 0.0f,
+	-0.5f,  0.5f, 0.0f
+};
+
+unsigned int indices[] = {
+	0, 1, 3,   // first triangle
+	1, 2, 3    // second triangle
 };
 
 /* strings holding shader source */
@@ -42,14 +48,13 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 GLuint compile_shader(GLenum type, const char *src);
 void check_shader_compilation(GLenum type, GLuint shader);
 
+GLuint link_shader_prog(GLuint vertex_shader, GLuint frag_shader);
+
 
 int main(void)
 {
 	unsigned int VBO;
-
-	/* variables for checking if shader compiliation succeeded */
-	int v_success, f_success, l_success;
-	char info_log[512];
+	GLuint vertex_shader, frag_shader, shader_prog;
 
 	printf("Hello Opengl world!\n");
 
@@ -59,11 +64,7 @@ int main(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow *window = glfwCreateWindow(800,
-					      600,
-					      "LearnOpenGL",
-					      NULL,
-					      NULL);
+	GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
 
 	if (window == NULL) {
 		fprintf(stderr, "Failed to create GLFW window\n");
@@ -78,52 +79,34 @@ int main(void)
 	}
 
 	glViewport(0, 0, 800, 600);
-
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	/* compile vertex shader */
-	unsigned int vertex_shader;
+	/* compile and link shaders */
 	vertex_shader = compile_shader(GL_VERTEX_SHADER, vertex_shader_src);
-
-
-	/* compile fragment shader */
-	unsigned int fragment_shader;
-	fragment_shader = compile_shader(GL_FRAGMENT_SHADER, frag_shader_src);
-
-	/* link shader program */
-	unsigned int shader_program;
-	shader_program = glCreateProgram();
-
-	glAttachShader(shader_program, vertex_shader);
-	glAttachShader(shader_program, fragment_shader);
-	glLinkProgram(shader_program);
-
-	/* check for linking errors */
-	glGetProgramiv(shader_program, GL_LINK_STATUS, &l_success);
-	if (!l_success) {
-		glGetProgramInfoLog(shader_program, 512, NULL, info_log);
-
-		fprintf(stderr, "ERROR::PROGRAM::LINKING_FAILED\n");
-		fprintf(stderr, "%s\n", info_log);
-	}
-
-	/* delete shader objects */
-	glDeleteShader(vertex_shader);
-	glDeleteShader(fragment_shader);
-
+	frag_shader = compile_shader(GL_FRAGMENT_SHADER, frag_shader_src);
+	shader_prog = link_shader_prog(vertex_shader, frag_shader);
 
 	/* set up a VAO to hold our VBO */
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
-
 	glBindVertexArray(VAO);
 
+	/* create the buffer to hold our vertices */
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
 	glBufferData(GL_ARRAY_BUFFER,
 		     sizeof(vertices),
 		     vertices,
+		     GL_STATIC_DRAW);
+
+		/* create element buffer object */
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+		     sizeof(indices),
+		     indices,
 		     GL_STATIC_DRAW);
 
 	/* tell OpenGL how to interpret our vector data */
@@ -131,7 +114,6 @@ int main(void)
 			      (void*) 0);
 
 	glEnableVertexAttribArray(0);
-
 
 	/* Render loop */
 	while (!glfwWindowShouldClose(window))
@@ -143,10 +125,14 @@ int main(void)
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		/* draw a happy triangle */
-		glUseProgram(shader_program);
+		/* draw a happy rectangle */
+		glUseProgram(shader_prog);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+
+		/* set polygon mode back to fill */
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		/* poll events and swap the buffers */
 		glfwSwapBuffers(window);
@@ -193,14 +179,49 @@ void check_shader_compilation(GLenum type, GLuint shader)
 	if(!success) {
 		glGetShaderInfoLog(shader, 512, NULL, info_log);
 		fprintf(stderr,	"ERROR::%s::COMPILATION_FAILED\n%s",
-			type, info_log);
+			type_str, info_log);
 	}
+}
+
+GLuint link_shader_prog(GLuint vertex_shader, GLuint frag_shader)
+{
+	GLuint prog;
+	int success;
+	char info_log[512];
+
+	/* create shader program */
+	prog = glCreateProgram();
+
+	/* attach frag and vertex shaders to program */
+	glAttachShader(prog, vertex_shader);
+	glAttachShader(prog, frag_shader);
+
+	/* link program */
+	glLinkProgram(prog);
+
+	/* check for linking errors */
+	glGetProgramiv(prog, GL_LINK_STATUS, &success);
+	if (!success) {
+		glGetProgramInfoLog(prog, 512, NULL, info_log);
+		fprintf(stderr, "ERROR::PROGRAM::LINKING_FAILURE\n%s\n", info_log);
+	}
+
+	/* delete shader objects */
+	glDeleteShader(vertex_shader);
+	glDeleteShader(frag_shader);
+
+	return prog;
 }
 
 void process_input(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
+	}
+
+	/* draw in wireframe as long as W key is pressed */
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 }
 
