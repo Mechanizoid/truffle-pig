@@ -8,11 +8,17 @@
 #include <GLFW/glfw3.h>
 
 
-/* Vertex data defining three points of a triangle */
+/* Vertex data defining corners of a rectangle */
 float vertices[] = {
-	-0.5f,  -0.5f, 0.0f,
-	 0.5f,  -0.5f, 0.0f,
-	 0.0f,   0.5f, 0.0f
+	 0.5f,  0.5f, 0.0f,
+	 0.5f, -0.5f, 0.0f,
+	-0.5f, -0.5f, 0.0f,
+	-0.5f,  0.5f, 0.0f
+};
+
+unsigned int indices[] = {
+	0, 1, 3,   // first triangle
+	1, 2, 3    // second triangle
 };
 
 /* strings holding shader source */
@@ -79,7 +85,6 @@ int main(void)
 	frag_shader = compile_shader(GL_FRAGMENT_SHADER, frag_shader_src);
 	shader_prog = link_shader_prog(vertex_shader, frag_shader);
 
-
 	/* set up a VAO to hold our VBO */
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
@@ -93,12 +98,21 @@ int main(void)
 		     vertices,
 		     GL_STATIC_DRAW);
 
+		/* create element buffer object */
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+		     sizeof(indices),
+		     indices,
+		     GL_STATIC_DRAW);
+
 	/* tell OpenGL how to interpret our vector data */
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
 			      (void*) 0);
 
 	glEnableVertexAttribArray(0);
-
 
 	/* Render loop */
 	while (!glfwWindowShouldClose(window))
@@ -110,11 +124,14 @@ int main(void)
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		/* draw a happy triangle */
+		/* draw a happy rectangle */
 		glUseProgram(shader_prog);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+
+		/* set polygon mode back to fill */
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		/* poll events and swap the buffers */
 		glfwSwapBuffers(window);
@@ -199,6 +216,11 @@ void process_input(GLFWwindow *window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
+	}
+
+	/* draw in wireframe as long as W key is pressed */
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 }
 
