@@ -102,8 +102,11 @@ int main(void)
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
 			      (void*) 0);
 
-	/* unbind vertex array object */
+	/* enable vertex attrib array at index 0 */
 	glEnableVertexAttribArray(0);
+
+	/* unbind VAO */
+	glBindVertexArray(0);
 
 	/* Render loop */
 	while (!glfwWindowShouldClose(window))
