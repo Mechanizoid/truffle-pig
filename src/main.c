@@ -34,13 +34,22 @@ const char *vertex_shader_src =
 	"  gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
 	"}\0";
 
-/* fragment shader source */
-const char *frag_shader_src =
+/* orange fragment shader source */
+const char *orange_frag_shader_src =
 	"#version 460 core\n"
 	"out vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
 	"  FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+	"}\0";
+
+/* yellow fragment shader source */
+const char *yellow_frag_shader_src =
+	"#version 460 core\n"
+	"out vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+	"  FragColor = vec4(1.0f, 0.9f, 0.1f, 1.0f);"
 	"}\0";
 
 
@@ -56,7 +65,8 @@ int main(void)
 {
 	unsigned int vao_array[2];
 	unsigned int vbo_array[2];
-	GLuint vertex_shader, frag_shader, shader_prog;
+	GLuint vertex_shader, frag_shader;
+	GLuint orange_shader, yellow_shader;
 
 	printf("Hello Opengl world!\n");
 
@@ -86,8 +96,12 @@ int main(void)
 
 	/* compile and link shaders */
 	vertex_shader = compile_shader(GL_VERTEX_SHADER, vertex_shader_src);
-	frag_shader = compile_shader(GL_FRAGMENT_SHADER, frag_shader_src);
-	shader_prog = link_shader_prog(vertex_shader, frag_shader);
+	frag_shader = compile_shader(GL_FRAGMENT_SHADER, orange_frag_shader_src);
+	orange_shader = link_shader_prog(vertex_shader, frag_shader);
+
+	vertex_shader = compile_shader(GL_VERTEX_SHADER, vertex_shader_src);
+	frag_shader = compile_shader(GL_FRAGMENT_SHADER, yellow_frag_shader_src);
+	yellow_shader = link_shader_prog(vertex_shader, frag_shader);
 
 	/* create VAO and VBO arrays */
 	glGenVertexArrays(2, vao_array);
@@ -135,11 +149,13 @@ int main(void)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		/* draw a pair of happy triangles */
-		glUseProgram(shader_prog);
+		glUseProgram(orange_shader);
 
 		glBindVertexArray(vao_array[0]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindVertexArray(0);
+
+		glUseProgram(yellow_shader);
 
 		glBindVertexArray(vao_array[1]);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
