@@ -9,11 +9,14 @@
 
 
 /* Vertex data defining corners of a rectangle */
-float vertices[] = {
+float triangle_1[] = {
 	/* triangle one */
 	-0.9f, -0.4f, 0.0f,
 	-0.5f,  0.4f, 0.0f,
-	-0.1f, -0.4f, 0.0f,
+	-0.1f, -0.4f, 0.0f
+};
+
+float triangle_2[] = {
 	/* triangle two */
 	 0.1f, -0.4f, 0.0f,
 	 0.5f,  0.4f, 0.0f,
@@ -51,7 +54,8 @@ GLuint link_shader_prog(GLuint vertex_shader, GLuint frag_shader);
 
 int main(void)
 {
-	unsigned int VBO;
+	unsigned int vao_array[2];
+	unsigned int vbo_array[2];
 	GLuint vertex_shader, frag_shader, shader_prog;
 
 	printf("Hello Opengl world!\n");
@@ -85,28 +89,40 @@ int main(void)
 	frag_shader = compile_shader(GL_FRAGMENT_SHADER, frag_shader_src);
 	shader_prog = link_shader_prog(vertex_shader, frag_shader);
 
-	/* create a VAO to hold our VBO */
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
+	/* create VAO and VBO arrays */
+	glGenVertexArrays(2, vao_array);
+	glGenBuffers(2, vbo_array);
 
-	/* create the VBO object to hold the buffer that contains our vertices */
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	/* set up the first VAO */
+	glBindVertexArray(vao_array[0]);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_array[0]);
+
 	glBufferData(GL_ARRAY_BUFFER,
-		     sizeof(vertices),
-		     vertices,
+		     sizeof(triangle_1),
+		     triangle_1,
 		     GL_STATIC_DRAW);
 
-	/* tell OpenGL how to interpret our vector data */
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
 			      (void*) 0);
 
-	/* enable vertex attrib array at index 0 */
 	glEnableVertexAttribArray(0);
-
-	/* unbind VAO */
 	glBindVertexArray(0);
+
+	/* set up the second VAO */
+	glBindVertexArray(vao_array[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_array[1]);
+
+	glBufferData(GL_ARRAY_BUFFER,
+		     sizeof(triangle_2),
+		     triangle_2,
+		     GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
+			      (void*) 0);
+
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
+
 
 	/* Render loop */
 	while (!glfwWindowShouldClose(window))
@@ -120,8 +136,13 @@ int main(void)
 
 		/* draw a pair of happy triangles */
 		glUseProgram(shader_prog);
-		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		glBindVertexArray(vao_array[0]);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindVertexArray(0);
+
+		glBindVertexArray(vao_array[1]);
+		glDrawArrays(GL_TRIANGLES, 0, 3);
 		glBindVertexArray(0);
 
 		/* set polygon mode back to fill */
