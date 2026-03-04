@@ -10,15 +10,14 @@
 
 /* Vertex data defining corners of a rectangle */
 float vertices[] = {
-	 0.5f,  0.5f, 0.0f,
-	 0.5f, -0.5f, 0.0f,
-	-0.5f, -0.5f, 0.0f,
-	-0.5f,  0.5f, 0.0f
-};
-
-unsigned int indices[] = {
-	0, 1, 3,   // first triangle
-	1, 2, 3    // second triangle
+	/* triangle one */
+	-0.9f, -0.4f, 0.0f,
+	-0.5f,  0.4f, 0.0f,
+	-0.1f, -0.4f, 0.0f,
+	/* triangle two */
+	 0.1f, -0.4f, 0.0f,
+	 0.5f,  0.4f, 0.0f,
+	 0.9f, -0.4f, 0.0f
 };
 
 /* strings holding shader source */
@@ -99,15 +98,6 @@ int main(void)
 		     vertices,
 		     GL_STATIC_DRAW);
 
-	/* create element buffer object */
-	unsigned int EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-		     sizeof(indices),
-		     indices,
-		     GL_STATIC_DRAW);
-
 	/* tell OpenGL how to interpret our vector data */
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
 			      (void*) 0);
@@ -125,10 +115,10 @@ int main(void)
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		/* draw a happy rectangle */
+		/* draw a pair of happy triangles */
 		glUseProgram(shader_prog);
 		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 
 		/* set polygon mode back to fill */
