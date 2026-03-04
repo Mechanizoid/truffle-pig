@@ -57,7 +57,7 @@ int main(void)
 
 	printf("Hello Opengl world!\n");
 
-	/* implement code to open GLFW window here */
+	/* open GLFW window */
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -72,6 +72,7 @@ int main(void)
 	}
 	glfwMakeContextCurrent(window);
 
+	/* initialize OpenGL */
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		fprintf(stderr, "Failed to initialize GLAD\n");
 		exit(EXIT_FAILURE);
@@ -85,12 +86,12 @@ int main(void)
 	frag_shader = compile_shader(GL_FRAGMENT_SHADER, frag_shader_src);
 	shader_prog = link_shader_prog(vertex_shader, frag_shader);
 
-	/* set up a VAO to hold our VBO */
+	/* create a VAO to hold our VBO */
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
-	/* create the buffer to hold our vertices */
+	/* create the VBO object to hold the buffer that contains our vertices */
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER,
@@ -98,10 +99,9 @@ int main(void)
 		     vertices,
 		     GL_STATIC_DRAW);
 
-		/* create element buffer object */
+	/* create element buffer object */
 	unsigned int EBO;
 	glGenBuffers(1, &EBO);
-
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
 		     sizeof(indices),
@@ -111,6 +111,8 @@ int main(void)
 	/* tell OpenGL how to interpret our vector data */
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float),
 			      (void*) 0);
+
+	/* unbind vertex array object */
 	glEnableVertexAttribArray(0);
 
 	/* Render loop */
