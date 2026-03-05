@@ -68,7 +68,8 @@ int main(void)
 	GLuint vertex_shader, frag_shader;
 	GLuint orange_shader, yellow_shader;
 
-	printf("Hello Opengl world!\n");
+	printf("Hello OpenGL world!\n");
+	printf("Package %s\n", PACKAGE_NAME);
 
 	/* open GLFW window */
 	glfwInit();
