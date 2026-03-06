@@ -68,6 +68,9 @@ dkms.conf
 # Ignore build-aux subdir
 build-aux/*
 
+# More weird Autotools stuff
+*/stamp-h1
+
 Makefile.in
 /ar-lib
 /mdate-sh
