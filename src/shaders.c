@@ -118,7 +118,7 @@ static char *load_shader_src(const char *filename)
 	size = ftell(src_file);
 	rewind(src_file);
 
-	shader_src = calloc(size + 1, sizeof(char));
+	shader_src = (char *) calloc(size + 1, sizeof(char));
 	if (shader_src == NULL) {
 		fprintf(stderr, "ERROR: call of calloc failed in load_shader_src\n");
 		exit(EXIT_FAILURE);
