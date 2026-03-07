@@ -72,10 +72,10 @@ int main(void)
 	printf("GL version string: %s\n", gl_version);
 
 	/* compile and link shaders */
-	orange_shader = build_shader("../assets/shaders/vertex_shader.glsl",
-				     "../assets/shaders/orange_frag_shader.glsl");
-	yellow_shader = build_shader("../assets/shaders/vertex_shader.glsl",
-				     "../assets/shaders/yellow_frag_shader.glsl");
+	orange_shader = build_shader("./assets/shaders/vertex_shader.glsl",
+				     "./assets/shaders/orange_frag_shader.glsl");
+	yellow_shader = build_shader("./assets/shaders/vertex_shader.glsl",
+				     "./assets/shaders/yellow_frag_shader.glsl");
 
 	/* create VAO and VBO arrays */
 	glGenVertexArrays(2, vao_array);
