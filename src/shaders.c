@@ -101,13 +101,13 @@ static char *load_shader_src(const char *filename)
 {
 	size_t size;
 	FILE *src_file;
-	char *shader_src;
+	char *src_buf;
 	int i = 0;
 
 	src_file = fopen(filename, "r");
 
 	if (src_file == NULL) {
-		fprintf(stderr, "ERROR: failed to open file %s in load_shader_src\n",
+		fprintf(stderr, "ERROR: failed to open shader source file %s\n",
 			filename);
 		exit(EXIT_FAILURE);
 	}
@@ -118,18 +118,18 @@ static char *load_shader_src(const char *filename)
 	size = ftell(src_file);
 	rewind(src_file);
 
-	shader_src = (char *) calloc(size + 1, sizeof(char));
-	if (shader_src == NULL) {
+	src_buf = (char *) calloc(size + 1, sizeof(char));
+	if (src_buf == NULL) {
 		fprintf(stderr, "ERROR: call of calloc failed in load_shader_src\n");
 		exit(EXIT_FAILURE);
 	}
 
 	for ( ; i < size; i++) {
-		shader_src[i] = fgetc(src_file);
+		src_buf[i] = fgetc(src_file);
 	}
-	shader_src[i] = '\0';
+	src_buf[i] = '\0';
 
 	fclose(src_file);
 
-	return shader_src;
+	return src_buf;
 }
